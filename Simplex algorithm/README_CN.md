@@ -1,4 +1,4 @@
-# Simplex Algorithm
+# 单纯形算法
 
 [![Hex.pm](https://img.shields.io/hexpm/l/plug.svg?style=plastic)](https://github.com/Vast-Stars/Algorithm)[![Travis branch](https://img.shields.io/badge/Language-English-green.svg?style=plastic)](https://github.com/Vast-Stars/Algorithm/Simplex-algorithm/README.md)[![Travis branch](https://img.shields.io/badge/Language-%E4%B8%AD%E6%96%87-green.svg?style=plastic)](https://github.com/Vast-Stars/Algorithm/Simplex-algorithm/README_CN.md)
 
@@ -8,7 +8,7 @@
 
 
 
-##SimpleMthd.m  Instructions
+##SimpleMthd.m 说明
 
 ```Matlab
 function [X,Y]=SimpleMthd(C,A,b,N)
@@ -20,9 +20,9 @@ St AX=b and X>=0
   N 1*(n-m)
 ```
 
-This function will draw Simplex Table every iteration.
+这个函数会在每一步都画出单纯形表。详情见函数注释
 
-## Find_Base.m  Instructions
+## Find_Base.m 说明
 
 ```matlab
 function [  ] = Find_Base(A,b)
@@ -30,5 +30,5 @@ function [  ] = Find_Base(A,b)
   b m*1
 ```
 
-This function will display all combination of  Base vector and then judge whether it is a base feasible solution.
+这个函数会枚举所有基向量组合，并判断是否可以作为基可行解。
 
