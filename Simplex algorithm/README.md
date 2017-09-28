@@ -1,6 +1,6 @@
 # Simplex Algorithm
 
-[![Hex.pm](https://img.shields.io/hexpm/l/plug.svg?style=plastic)](https://github.com/Vast-Stars/Algorithm)[![Travis branch](https://img.shields.io/badge/Language-English-green.svg?style=plastic)](https://github.com/Vast-Stars/Algorithm/Simplex-algorithm/README.md)[![Travis branch](https://img.shields.io/badge/Language-%E4%B8%AD%E6%96%87-green.svg?style=plastic)](https://github.com/Vast-Stars/Algorithm/Simplex-algorithm/README_CN.md)
+[![Hex.pm](https://img.shields.io/hexpm/l/plug.svg?style=plastic)](https://github.com/Vast-Stars/Algorithm)[![Travis branch](https://img.shields.io/badge/Language-English-green.svg?style=plastic)](https://github.com/Vast-Stars/Algorithm/blob/master/Simplex%20algorithm/README.md)[![Travis branch](https://img.shields.io/badge/Language-%E4%B8%AD%E6%96%87-green.svg?style=plastic)](https://github.com/Vast-Stars/Algorithm/blob/master/Simplex%20algorithm/README_CN.md)
 
 
 
