@@ -6,9 +6,7 @@
 
 ----
 
-
-
-##SimpleMthd.m  Instructions
+##  SimpleMthd.m  Instructions
 
 ```Matlab
 function [X,Y]=SimpleMthd(C,A,b,N)
