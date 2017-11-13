@@ -1,31 +1,81 @@
-/*
-2017年9月27日
-罗毅 15020520035
-数据结构：status结构体。 m为数组矩阵。x y表示"0"的索引。 g h F负责计算“距离”。
-statu为矩阵m的字符串表示，便于比较状态是否相同。path 记录从起始状态到当前状态走过的路径。
-使用A* 算法。主要在于维护更新	Close、Open表 及 “距离”函数F的设定
-*/
 #include "stdafx.h"
 #include <iostream>
 #include<vector>
-#include<string>
+#include <iomanip>
 #include<algorithm>
-#define SIZE 3  
-#define TARGET "123456780"
-
+// The Side length of Matrix;  SIZE=n means (n*n-1)digit problem.
+#define SIZE 3 
 using namespace std;
 struct status;
 vector<status> Open, Close;
+int  TARGET[SIZE*SIZE] = { 0 };
+
+void generate_Target()
+{
+	int count, i, j, k, kend, lend;
+	kend = SIZE / 2;
+	lend = SIZE;
+	count = 1;
+	for (i = 0, j = 0, k = 0; k<kend; k++)
+	{
+		TARGET[SIZE*i+j] = count++;
+
+		for (j++; j<lend; j++)
+			TARGET[SIZE*i + j] = count++;
+
+		for (i++, j--; i<lend; i++)
+			TARGET[SIZE*i + j] = count++;
+
+		for (i--, j--; j >= k; j--)
+			TARGET[SIZE*i + j] = count++;
+
+		for (i--, j++; i>k; i--)
+			TARGET[SIZE*i + j] = count++;
+
+		i++; j++; lend--;
+	}
+
+	if (SIZE % 2 != 0) TARGET[i*SIZE+j] = 0;
+
+	for (i = 0; i<SIZE; i++)
+	{
+		for (j = 0; j < SIZE; j++)
+			cout << TARGET[i*SIZE+j];
+		cout << endl;
+	}
+
+}
+
+int reverse_nums(int a[SIZE*SIZE])
+{
+	int counter=0;
+	for (int i = 0; i < SIZE*SIZE; i++)
+	{
+		if (*(a + i) == 0)
+			continue;
+		for (int j = SIZE*SIZE-1; j >i; j--)
+		{
+			if (*(a + i) < *(a + j))
+				counter++;
+		}
+	}
+	return counter;
+}
+bool valid_case(int a[SIZE*SIZE], int b[SIZE*SIZE])
+{
+	return reverse_nums(a)%2==reverse_nums(b)%2?true:false;
+}
+
 int check(const int *p)
 {
 	int h = 0, i = 0;
-	for (i = 0; i < SIZE*SIZE - 1; i++)
-		if (*(p +i)!= i + 1)
+	for (i = 0; i < SIZE*SIZE ; i++)
+		if (*(p +i)!= *(TARGET+i))
 			h++;
-	if (*(p+i) != 0)
-		h++;
+
 	return h;
 }
+
 struct status
 {
 	int m[SIZE*SIZE];
@@ -33,35 +83,37 @@ struct status
 	int g;
 	int h;
 	int F;
-	string statu = " ";
 	string path = " ";
-
+	status()
+	{
+		memset(m, 0, sizeof(int) * SIZE*SIZE);
+	}
+	status(int *p)
+	{
+		memcpy(m, p, sizeof(int) * SIZE*SIZE);
+	}
 	bool operator< (const status &a)const
 	{
 		return a.F > F;  //由小到大排列  
 	}
-
-	bool operator== (const status &a)const
+	void operator= (int *p)
 	{
-		return a.statu == statu;
+		memcpy(m, p, sizeof(int) * SIZE*SIZE);
 	}
-	bool operator!= (const status &a)const
+	void operator= (initializer_list<int> p)
 	{
-		return a.statu != statu;
-	}
-	bool equals(const status &a)const
-	{
-		return a.statu == statu;
+		copy(p.begin(), p.end(), m);
 	}
 
+	//bool operator== (const status &a)const
+	//{
+	//	return a.statu == statu;
+	//}
 	void update()
 	{
-		char buffer[2];
 		g = path.size();
 		h = check(m);
 		F = g + h;
-		statu = " ";
-
 		for (int i = 0; i < SIZE*SIZE; i++)
 		{
 			if (m[i] == 0)
@@ -69,13 +121,9 @@ struct status
 				x = i / SIZE;
 				y = i%SIZE;
 			}
-			sprintf(buffer, "%d", m[i]);
-			statu += buffer;
 		}
-
 	}
 };
-
 
 
 void print(const int *p)
@@ -85,7 +133,7 @@ void print(const int *p)
 	cout << "Draw Matrix:" << endl;
 	while (i < SIZE*SIZE)
 	{
-		cout << *(p + i) << ' ';
+		cout << setw(4)<< *(p + i);
 		if (++i % SIZE == 0)
 			cout << endl;
 	}
@@ -104,7 +152,7 @@ status  Move(status s, char direction)
 	{
 	case 'r':
 	{
-		if (s.y%SIZE==SIZE-1 || s.path.back() == 'l')
+		if (s.y ==SIZE-1 || s.path.back() == 'l')
 			return zero ;
 		else
 		{
@@ -116,7 +164,7 @@ status  Move(status s, char direction)
 	}
 	case 'l':
 	{
-		if (s.y%SIZE == 0 || s.path.back() == 'r')
+		if (s.y == 0 || s.path.back() == 'r')
 			return zero;
 		else
 		{
@@ -140,7 +188,7 @@ status  Move(status s, char direction)
 	}
 	case 'd':
 	{
-		if (s.x/SIZE == SIZE - 1 || s.path.back() == 'u')
+		if (s.x == SIZE - 1 || s.path.back() == 'u')
 			return zero;
 		else
 		{
@@ -156,44 +204,61 @@ status  Move(status s, char direction)
 
 }
 
- vector<status>::iterator  Find( vector<status>& ss, const status& a)
+
+std::vector<status>::const_iterator Find( vector<status>& ss, const status& a)
 {
-	 vector<status>::iterator p = ss.end();
-	if(!ss.empty())
-	for ( p = ss.begin(); p != ss.end(); p++)
-		if (p->statu == a.statu)
+	vector<status>::const_iterator p=ss.end() ;
+
+	for (p = ss.begin(); p != ss.end(); p++)
+	{
+		if( memcmp(p->m, a.m, sizeof(a.m))==0)
 			return p;
+	}
 	return p;
+}
+
+//vector<status>::iterator  Find(vector<status>& ss, const status& a)
+//{
+//	vector<status>::iterator p = ss.end();
+//	if (!ss.empty())
+//		for (p = ss.begin(); p != ss.end(); p++)
+//			if (p->statu == a.statu)
+//				return p;
+//	return p;
+//}
+vector<status> Generate_Next(const status &a)
+{
+	vector<status> Nex;
+	status tem;
+	tem = Move(a, 'l');
+	if (tem.x != -1)
+		Nex.push_back(tem);
+	tem = Move(a, 'r');
+	if (tem.x != -1)
+		Nex.push_back(tem);
+	tem = Move(a, 'u');
+	if (tem.x != -1)
+		Nex.push_back(tem);
+	tem = Move(a, 'd');
+	if (tem.x != -1)
+		Nex.push_back(tem);
+	return Nex;
 }
 int fun()
 {
-	status tem,tem2;
+	status tem;
 	tem = *Open.begin();
-	
 	if (tem.h==0)
 		return 1;
 	Close.push_back(tem);
 	vector<status> nex;
-
-	tem2 = Move(tem, 'l');
-	if (tem2.x != -1)
-		nex.push_back(tem2);
-	tem2 = Move(tem, 'r');
-	if (tem2.x != -1)
-		nex.push_back(tem2);
-	tem2 = Move(tem, 'u');
-	if (tem2.x != -1)
-		nex.push_back(tem2);
-	tem2 = Move(tem, 'd');
-	if (tem2.x != -1)
-		nex.push_back(tem2);
-
+	nex = Generate_Next(tem);
 	for (auto it = nex.begin(); it != nex.end(); it++)
 	{
 		if (Find(Close, *it) == Close.end())
 		{
-//			cout << it->statu << "  不在Close中!" << endl;
-			vector<status>::iterator & tem3 = Find(Open, *it);
+//	cout << it->statu << "  不在Close中!" << endl;
+			vector<status>::const_iterator & tem3 = Find(Open, *it);
 			if (tem3== Open.end())
 			{
 //				cout << it->statu << "  不在Open中!" << endl;
@@ -205,36 +270,46 @@ int fun()
 				Open.push_back(*it);
 			}
 		}
-
 	}
 	nex.clear();
 	Open.erase(Open.begin());
 	return 0;
 }
+
 int main()
 {
-	status S;
+	generate_Target();
+	status S,S1;
 //S即为输入。假定为有解输入。
-	S = { 4,1,3,2,6,8,7,5,0 };
+	//S = { 1,2,3,0,8,4,7,6,5};
+	S = {7,5,3,1,6,4,2,8,0};
 	S.update();
+
+	if (!valid_case(S.m, TARGET))
+	{
+		cout << "Invalid input!" << endl;
+		return 0;
+    }
+
 	Open.push_back(S);
-	
+
 	print((*Open.begin()).m);
 	int step = 0;
 	while (!fun())
 	{
 		sort(Open.begin(), Open.end());
-		printf("fun:%d:  Size of Open:%d\n", step++,Open.size());
+		//printf("fun:%d:  Size of Open:%d\n", step++,Open.size());
 //print((*Open.begin()).m);
 	}
 	status answer = *Open.begin();
 	string path =answer.path;
 
-	for (int i=1;i<path.size();i++)
+	for (size_t i=1;i<path.size();i++)
 	{
 		S = Move(S, path[i]);
 		print(S.m);
 	}
+	cout << "Length:" << path.size()-1;
 	getchar();
 	return 0;
 }
